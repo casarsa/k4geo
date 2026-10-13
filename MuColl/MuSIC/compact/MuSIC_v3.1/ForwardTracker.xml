@@ -1,0 +1,315 @@
+<lccdd>
+
+    <define>
+        <!-- Disk z positions come straight from the nozzle file (Nozzle_10deg_v3.xml),
+             which cuts a gap around each of them.
+             Each disk is split into two layers (ring A and ring B) to satisfy the
+             VertexEndcap_o1_v07 constraint of one ring per layer.
+             Layer IDs: 2*i = disk i ring A, 2*i+1 = disk i ring B  (i = 0..8). -->
+        <constant name="ForwardTracker_z0"            value="NozzleDisk_z0"/>
+        <constant name="ForwardTracker_z1"            value="NozzleDisk_z1"/>
+        <constant name="ForwardTracker_z2"            value="NozzleDisk_z2"/>
+        <constant name="ForwardTracker_z3"            value="NozzleDisk_z3"/>
+        <constant name="ForwardTracker_z4"            value="NozzleDisk_z4"/>
+        <constant name="ForwardTracker_z5"            value="NozzleDisk_z5"/>
+        <constant name="ForwardTracker_z6"            value="NozzleDisk_z6"/>
+        <constant name="ForwardTracker_z7"            value="NozzleDisk_z7"/>
+        <constant name="ForwardTracker_z8"            value="NozzleDisk_z8"/>
+
+        <!-- Inner radius = 25 mm (clears the steel insert around the W bore);
+             outer radius = nozzle outer surface at the disk position -->
+        <constant name="ForwardTracker_rmin_0"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_0"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z0 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_1"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_1"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z1 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_2"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_2"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z2 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_3"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_3"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z3 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_4"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_4"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z4 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_5"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_5"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z5 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_6"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_6"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z6 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_7"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_7"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z7 - Nozzle_kink_z)"/>
+
+        <constant name="ForwardTracker_rmin_8"        value="25*mm"/>
+        <constant name="ForwardTracker_rmax_8"        value="Nozzle_rmax_kink + Nozzle_shell_slope*(ForwardTracker_z8 - Nozzle_kink_z)"/>
+
+        <!-- 8 modules per ring x 2 rings per disk = 16 modules per disk.
+             Module width sized for ForwardTrackerNSlots=16 so each module covers one
+             22.5° slot. Ring A: even slots (phi0 = pi/NSlots), ring B: odd slots
+             (phi0 = 3*pi/NSlots), z-staggered by ForwardTrackerStagger. -->
+        <constant name="ForwardTrackerNSlots"         value="16"/>
+        <constant name="ForwardTrackerModules"        value="8"/>
+        <constant name="ForwardTrackerOverlap"        value="0.5*mm"/>
+        <constant name="ForwardTrackerStagger"        value="2*mm"/>
+    </define>
+
+
+    <display>
+        <vis name="ForwardTrackerModuleVis"    alpha="1.0" r="1"    g="0.6"   b="0"    showDaughters="true"  visible="false"/>
+        <vis name="ForwardTrackerSensitiveVis" alpha="1.0" r="1"    g="0.2"   b="0.2"  showDaughters="true"  visible="true"/>
+        <vis name="ForwardTrackerPassiveVis"   alpha="1.0" r="0.274" g="0.274" b="0.274" showDaughters="true" visible="true"/>
+    </display>
+
+
+    <readouts>
+        <readout name="ForwardTrackerCollection">
+            <id>${GlobalTrackerReadoutID}</id>
+        </readout>
+    </readouts>
+
+
+    <detectors>
+        <detector id="DetID_FT" name="ForwardTracker" type="VertexEndcap_o1_v07"
+                  readout="ForwardTrackerCollection" reflect="true" region="NozzleRegion">
+            <envelope vis="ForwardTrackerModuleVis">
+                <shape type="Assembly"/>
+            </envelope>
+
+            <type_flags type="DetType_TRACKER + DetType_PIXEL + DetType_ENDCAP"/>
+
+            <!-- One module type per disk (9 disks, 2 layers each = 18 layers total).
+                 x1/x2 use NSlots=16 so module width = one 22.5° slot. -->
+
+            <module name="ForwardTrackerModule_0" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_0 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_0 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_0 - ForwardTracker_rmin_0)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_1" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_1 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_1 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_1 - ForwardTracker_rmin_1)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_2" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_2 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_2 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_2 - ForwardTracker_rmin_2)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_3" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_3 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_3 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_3 - ForwardTracker_rmin_3)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_4" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_4 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_4 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_4 - ForwardTracker_rmin_4)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_5" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_5 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_5 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_5 - ForwardTracker_rmin_5)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_6" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_6 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_6 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_6 - ForwardTracker_rmin_6)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_7" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_7 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_7 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_7 - ForwardTracker_rmin_7)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <module name="ForwardTrackerModule_8" vis="ForwardTrackerModuleVis">
+                <trd x1="ForwardTracker_rmin_8 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     x2="ForwardTracker_rmax_8 * tan(pi/ForwardTrackerNSlots) + ForwardTrackerOverlap * sin(pi/ForwardTrackerNSlots)"
+                     z="(ForwardTracker_rmax_8 - ForwardTracker_rmin_8)/2"/>
+                <module_component thickness="280e-3*mm" material="Silicon" vis="ForwardTrackerPassiveVis"/>
+                <module_component thickness="50e-3*mm"  material="Silicon" sensitive="true" vis="ForwardTrackerSensitiveVis"/>
+            </module>
+
+            <!-- Disk 0 (z = 541 cm): layers 0 (ring A) and 1 (ring B) -->
+            <layer id="0">
+                <ring r="(ForwardTracker_rmax_0 + ForwardTracker_rmin_0)/2"
+                      zstart="ForwardTracker_z0"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_0"/>
+            </layer>
+            <layer id="1">
+                <ring r="(ForwardTracker_rmax_0 + ForwardTracker_rmin_0)/2"
+                      zstart="ForwardTracker_z0 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_0"/>
+            </layer>
+
+            <!-- Disk 1 (z = 545 cm): layers 2 (ring A) and 3 (ring B) -->
+            <layer id="2">
+                <ring r="(ForwardTracker_rmax_1 + ForwardTracker_rmin_1)/2"
+                      zstart="ForwardTracker_z1"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_1"/>
+            </layer>
+            <layer id="3">
+                <ring r="(ForwardTracker_rmax_1 + ForwardTracker_rmin_1)/2"
+                      zstart="ForwardTracker_z1 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_1"/>
+            </layer>
+
+            <!-- Disk 2 (z = 550 cm): layers 4 (ring A) and 5 (ring B) -->
+            <layer id="4">
+                <ring r="(ForwardTracker_rmax_2 + ForwardTracker_rmin_2)/2"
+                      zstart="ForwardTracker_z2"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_2"/>
+            </layer>
+            <layer id="5">
+                <ring r="(ForwardTracker_rmax_2 + ForwardTracker_rmin_2)/2"
+                      zstart="ForwardTracker_z2 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_2"/>
+            </layer>
+
+            <!-- Disk 3 (z = 555 cm): layers 6 (ring A) and 7 (ring B) -->
+            <layer id="6">
+                <ring r="(ForwardTracker_rmax_3 + ForwardTracker_rmin_3)/2"
+                      zstart="ForwardTracker_z3"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_3"/>
+            </layer>
+            <layer id="7">
+                <ring r="(ForwardTracker_rmax_3 + ForwardTracker_rmin_3)/2"
+                      zstart="ForwardTracker_z3 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_3"/>
+            </layer>
+
+            <!-- Disk 4 (z = 565 cm): layers 8 (ring A) and 9 (ring B) -->
+            <layer id="8">
+                <ring r="(ForwardTracker_rmax_4 + ForwardTracker_rmin_4)/2"
+                      zstart="ForwardTracker_z4"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_4"/>
+            </layer>
+            <layer id="9">
+                <ring r="(ForwardTracker_rmax_4 + ForwardTracker_rmin_4)/2"
+                      zstart="ForwardTracker_z4 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_4"/>
+            </layer>
+
+            <!-- Disk 5 (z = 575 cm): layers 10 (ring A) and 11 (ring B) -->
+            <layer id="10">
+                <ring r="(ForwardTracker_rmax_5 + ForwardTracker_rmin_5)/2"
+                      zstart="ForwardTracker_z5"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_5"/>
+            </layer>
+            <layer id="11">
+                <ring r="(ForwardTracker_rmax_5 + ForwardTracker_rmin_5)/2"
+                      zstart="ForwardTracker_z5 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_5"/>
+            </layer>
+
+            <!-- Disk 6 (z = 580 cm): layers 12 (ring A) and 13 (ring B) -->
+            <layer id="12">
+                <ring r="(ForwardTracker_rmax_6 + ForwardTracker_rmin_6)/2"
+                      zstart="ForwardTracker_z6"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_6"/>
+            </layer>
+            <layer id="13">
+                <ring r="(ForwardTracker_rmax_6 + ForwardTracker_rmin_6)/2"
+                      zstart="ForwardTracker_z6 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_6"/>
+            </layer>
+
+            <!-- Disk 7 (z = 585 cm): layers 14 (ring A) and 15 (ring B) -->
+            <layer id="14">
+                <ring r="(ForwardTracker_rmax_7 + ForwardTracker_rmin_7)/2"
+                      zstart="ForwardTracker_z7"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_7"/>
+            </layer>
+            <layer id="15">
+                <ring r="(ForwardTracker_rmax_7 + ForwardTracker_rmin_7)/2"
+                      zstart="ForwardTracker_z7 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_7"/>
+            </layer>
+
+            <!-- Disk 8 (z = 589 cm): layers 16 (ring A) and 17 (ring B) -->
+            <layer id="16">
+                <ring r="(ForwardTracker_rmax_8 + ForwardTracker_rmin_8)/2"
+                      zstart="ForwardTracker_z8"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_8"/>
+            </layer>
+            <layer id="17">
+                <ring r="(ForwardTracker_rmax_8 + ForwardTracker_rmin_8)/2"
+                      zstart="ForwardTracker_z8 + ForwardTrackerStagger"
+                      nmodules="(int) ForwardTrackerModules"
+                      dz="0" phi0="3*pi/ForwardTrackerNSlots"
+                      module="ForwardTrackerModule_8"/>
+            </layer>
+
+        </detector>
+    </detectors>
+
+
+    <plugins>
+        <plugin name="DD4hep_GenericSurfaceInstallerPlugin">
+            <argument value="ForwardTracker"/>
+            <argument value="dimension=2"/>
+            <argument value="u_x=-1."/>
+            <argument value="v_z=1."/>
+            <argument value="n_y=1."/>
+        </plugin>
+    </plugins>
+
+</lccdd>
