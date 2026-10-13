@@ -73,13 +73,22 @@ Readout: `ForwardTrackerCollection` (same bit-field as GlobalTrackerReadoutID).
 ### Vertex Barrel layers (5 single layers)
 Silicon thickness: 190e-3 mm (50e-3 sensor + 140e-3 support)
 
-|ID | R [mm]    | Zmax [mm] |
-|---|-----------|-----------|
-|0  | 29        | 130       |
-|1  | 40        | 130       |
-|2  | 50        | 130       |
-|3  | 73        | 130       |
-|4  | 101       | 130       |
+Each layer is built from ladders running the full length in z. A ladder carries a
+single 260 mm long passive silicon support and, on its outer face, 10 sensitive
+silicon sensors of 26 mm each tiling that length. Sensor width equals the ladder
+width and grows with radius.
+
+|ID | R [mm]    | Zmax [mm] | Ladders | Sensors/ladder | Sensor w x l x t [mm] |
+|---|-----------|-----------|---------|----------------|-----------------------|
+|0  | 29        | 130       | 16      | 10             | 13 x 26 x 0.050       |
+|1  | 40        | 130       | 15      | 10             | 18 x 26 x 0.050       |
+|2  | 50        | 130       | 15      | 10             | 23 x 26 x 0.050       |
+|3  | 73        | 130       | 21      | 10             | 24 x 26 x 0.050       |
+|4  | 101       | 130       | 29      | 10             | 24 x 26 x 0.050       |
+
+Total: 960 sensors. Sensor centres run from z = -117 mm to +117 mm in 26 mm
+steps. The sensor index is written to the `sensor` field of the readout ID, the
+ladder index to `module`.
 
 
 ### Vertex Endcap disks (4 single disks per side)

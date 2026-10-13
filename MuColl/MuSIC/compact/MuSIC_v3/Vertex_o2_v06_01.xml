@@ -30,7 +30,10 @@
 
     <define>
         <constant name="VertexBarrel_zmax" value="130*mm"/>
-        <constant name="VertexBarrel_nmodules" value="5"/>
+        <!-- Sensors per ladder along z. The ZSegmentedPlanarTracker driver tiles the full
+             2*VertexBarrel_zmax ladder length with this many equal sensors, so 10 sensors
+             give 26 mm each. -->
+        <constant name="VertexBarrel_nmodules" value="10"/>
         <constant name="VertexBarrel_r1" value="29*mm"/>
         <constant name="VertexBarrel_r2" value="40*mm"/>
         <constant name="VertexBarrel_r3" value="50*mm"/>
