@@ -1,0 +1,33 @@
+<lccdd>
+    <!--  Definition of global dictionary constants          -->
+    <define>
+        <constant name="Beampipe_rmin"      value="22.0*mm"/>
+        <constant name="Beampipe_thickness" value="0.5*mm"/>
+        <constant name="Beampipe_zmax"      value="Nozzle_zmax"/>
+    </define>
+
+    <!--  Definition of the used visualization attributes    -->
+    <display>
+        <vis name="BeampipeWallVis" alpha="1.0" r="0.8" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+        <vis name="VacVis"   alpha="1.0" r="1.0" g="1.0"  b="1.0"   showDaughters="true"  visible="false"/>
+    </display>
+
+
+    <detectors>
+        <comment>Beampipe: straight beryllium tube along the whole beamline (no nozzles in MuSIC_v2.1)</comment>
+
+        <detector name="BeampipeVacuum" type="DD4hep_PolyconeSupport" vis="VacVis" region="BeampipeRegion">
+            <comment>Beam vacuum inside the beryllium wall</comment>
+            <material name="Vacuum"/>
+            <zplane z="-Beampipe_zmax" rmin="0" rmax="Beampipe_rmin" />
+            <zplane z="Beampipe_zmax"  rmin="0" rmax="Beampipe_rmin" />
+        </detector>
+
+        <detector name="BeampipeWall" type="DD4hep_PolyconeSupport" vis="BeampipeWallVis" region="BeampipeRegion">
+            <comment>Beryllium wall, 0.5 mm thick</comment>
+            <material name="Beryllium"/>
+            <zplane z="-Beampipe_zmax" rmin="Beampipe_rmin" rmax="Beampipe_rmin+Beampipe_thickness" />
+            <zplane z="Beampipe_zmax"  rmin="Beampipe_rmin" rmax="Beampipe_rmin+Beampipe_thickness" />
+        </detector>
+    </detectors>
+</lccdd>
